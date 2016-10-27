@@ -24,6 +24,7 @@ def parseMidi(midiFile):
 				channels[chan].tracks[0].append(message)
 	return (channels,metas)
 
+# useless
 def select_notes(mid):
 	res = MidiFile()
 	res.tracks.append(MidiTrack())
@@ -33,9 +34,11 @@ def select_notes(mid):
 				res.tracks[0].append(message)
 	return res
 
+# just for mapping
 msg_note = lambda message:message.note
 
-def note_egal_val(mid):
+# depreciated
+def note_egal_val_notempo(mid):
 	return map(msg_note,mid.tracks[0])
 
 def note2vect(note):
@@ -43,10 +46,26 @@ def note2vect(note):
 	res[note]=1
 	return res
 
+# depreciated
 msg2vect = lambda message:note2vect(message.note)
 
-def note_egal_vect(mid):
+# depreciated
+def note_egal_vect_notempo(mid):
 	return map(msg2vect,mid.tracks[0])
+
+def note_egal_vect(mid):
+	notevect = np.zeros(128,np.int)
+	listnote=[]
+	for message in mid.tracks[0]:
+		if not isinstance(message,MetaMessage):
+			if message.time > 0:
+				for i in range(message.time):
+					listnote.append(notevect)
+			if message.type == 'note_on' and message.velocity != 0:
+				notevect[message.note]=1
+			if message.type == 'note_off' or (message.type == 'note_on' and message.velocity == 0):
+				notevect[message.note]=0
+	return listnote
 
 def getMidiFile(midiFile):
 	return MidiFile(midiFile)
@@ -60,6 +79,7 @@ def newMidiFile():
 def saveMidi(mid,file):
 	mid.save(file)
 
+# depreciated
 def saveMidiList(midis,base_name='chan_'):
 	for i in range(len(midis)):
 		mid = midis[i]
