@@ -15,12 +15,15 @@ def splitChannels(midiName,midiSource):
 	channels,metas=me.parseMidi(midiFile)
 	me.saveMidiList(channels,outDir+'/chan_')
 
-def scanDir(path="./",directory,action):
-	for file in os.listdir(directory):
-		if os.path.isdir(file):
-			scanDir(path+directory,file,action)
+def printFile(file):
+	print(file)
+
+def scanDir(path="./",directory=".",action="printFile"):
+	for file in os.listdir(path+directory):
+		if os.path.isdir(path+directory+"/"+file):
+			scanDir(path+directory+"/",file,action)
 		else:
-			globals()[action](path+directory+file)
+			globals()[action](path+directory+"/"+file)
 
 def feedRNNwithMIDI(midiFile):
 	try:
