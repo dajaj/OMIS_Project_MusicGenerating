@@ -60,7 +60,7 @@ def note_egal_vect(mid):
 		if not isinstance(message,MetaMessage):
 			if message.time > 0:
 				for i in range(message.time):
-					listnote.append(notevect)
+					listnote.append(np.array(notevect))
 			if message.type == 'note_on' and message.velocity != 0:
 				notevect[message.note]=1
 			if message.type == 'note_off' or (message.type == 'note_on' and message.velocity == 0):
