@@ -24,35 +24,6 @@ def parseMidi(midiFile):
 				channels[chan].tracks[0].append(message)
 	return (channels,metas)
 
-# useless
-def select_notes(mid):
-	res = MidiFile()
-	res.tracks.append(MidiTrack())
-	for track in mid.tracks:
-		for message in track:
-			if message.type == 'note_on' or message.type == 'note_off':
-				res.tracks[0].append(message)
-	return res
-
-# just for mapping
-msg_note = lambda message:message.note
-
-# depreciated
-def note_egal_val_notempo(mid):
-	return map(msg_note,mid.tracks[0])
-
-def note2vect(note):
-	res = np.zeros(128,np.int)
-	res[note]=1
-	return res
-
-# depreciated
-msg2vect = lambda message:note2vect(message.note)
-
-# depreciated
-def note_egal_vect_notempo(mid):
-	return map(msg2vect,mid.tracks[0])
-
 def note_egal_vect(mid):
 	notevect = np.zeros(128,np.int)
 	listnote=[]
@@ -79,12 +50,6 @@ def newMidiFile():
 def saveMidi(mid,file):
 	mid.save(file)
 
-# depreciated
-def saveMidiList(midis,base_name='chan_'):
-	for i in range(len(midis)):
-		mid = midis[i]
-		fileName = base_name + str(i) + '.mid'
-		mid.save(fileName)
 
 if __name__ == "__main__":
 	print("MIDI files encoder using MIDO")
