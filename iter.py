@@ -1,22 +1,27 @@
 import mido_encodage as me
 import os
 
-def scanDir(directory=".",midiSample=[]):
-	print("Sanning "+directory)
+def scanDir(directory=".",midiSample=[],verbose=1):
+	if verbose:
+		print("Sanning "+directory)
 	for file in os.listdir(directory):
 		if os.path.isdir(directory+"/"+file):
-			scanDir(directory+"/"+file,midiSample)
+			scanDir(directory+"/"+file,midiSample,verbose)
 		else:
-			addMidiToList(directory+"/"+file,midiSample)
-	print("Scanned "+directory)
+			addMidiToList(directory+"/"+file,midiSample,verbose)
+	if verbose:
+		print("Scanned "+directory)
 	return midiSample
 
-def addMidiToList(midiFile,midiList):
-	print("Adding "+midiFile)
+def addMidiToList(midiFile,midiList,verbose=1):
+	if verbose:
+		print("Adding "+midiFile)
 	try:
 		channels,metas=me.parseMidi(midiFile)
 		for channel in channels:
 			midiList.append(channel)
+		if verbose:
+			print("Added "+midiFile+" ** "+str(len(channels))+" channels")
 	except:
 		os.remove(midiFile)
 		print(midiFile+" REMOVED")
