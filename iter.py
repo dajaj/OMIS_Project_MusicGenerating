@@ -3,6 +3,7 @@ import os
 
 def scanDir(directory="."):
 	midiSample = []
+	print(directory)
 	for file in os.listdir(directory):
 		if os.path.isdir(directory+"/"+file):
 			scanDir(directory+"/"+file)
@@ -11,6 +12,7 @@ def scanDir(directory="."):
 	return midiSample
 
 def addMidiToList(midiFile,midiList):
+	print("Adding "+midiFile)
 	try:
 		channels,metas=me.parseMidi(midiFile)
 		for channel in channels:

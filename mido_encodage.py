@@ -8,6 +8,8 @@ def parseMidi(midiFile):
 	channels = []
 	metas = []
 
+	print("Parsing "+midiFile)
+
 	mid = MidiFile(midiFile)
 	for track in mid.tracks:
 		for message in track:
@@ -22,6 +24,7 @@ def parseMidi(midiFile):
 					channels.append(mid)
 					chan_max+=1
 				channels[chan].tracks[0].append(message)
+	print("Parsed")
 	return (channels,metas)
 
 def note_egal_vect(mid):
