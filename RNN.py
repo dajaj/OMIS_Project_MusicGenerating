@@ -10,6 +10,8 @@ X = np.array(sample)
 y = np.array(sample)
 X_train,y_train,X_test,y_test = train_test_split(X,y,test_size=0.20)
 
+print("Data set splitted")
+
 model = SimpleSeq2Seq(input_shape=(len(sample[0]),128),output_dim=128,output_length=len(sample[0]))
 
 print(":: Compiling model")

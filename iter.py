@@ -1,14 +1,14 @@
 import mido_encodage as me
 import os
 
-def scanDir(directory="."):
-	midiSample = []
-	print(directory)
+def scanDir(directory=".",midiSample=[]):
+	print("Sanning "+directory)
 	for file in os.listdir(directory):
 		if os.path.isdir(directory+"/"+file):
-			scanDir(directory+"/"+file)
+			scanDir(directory+"/"+file,midiSample)
 		else:
 			addMidiToList(directory+"/"+file,midiSample)
+	print("Scanned "+directory)
 	return midiSample
 
 def addMidiToList(midiFile,midiList):
