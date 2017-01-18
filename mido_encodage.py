@@ -33,6 +33,11 @@ def parseMidi(midiFile,allowMultipleNotesOnTempo=False):
 				channels[chan].tracks[0].append(message)
 	return (channels,metas)
 
+def note2vect(note):
+	res = np.zeros(128,np.int)
+	res[note]=1
+	return res
+
 def note_egal_vect(mid,max_len=0,allowNoteOnSeveralTempos=False):
 	notevect = np.zeros(128,np.int)
 	listnote=[]
