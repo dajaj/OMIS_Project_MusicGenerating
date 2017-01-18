@@ -5,7 +5,7 @@ from keras.models import Sequential
 from keras.layers.embeddings import Embedding
 import numpy as np
 
-saveName = "2017-01-18-model-001"
+saveName = "2017-01-18-model-001.h5"
 
 print(":: IMPORTING DATA SET")
 X,y = preprocessMidi("MIDI/test",verbose=1,removeExceptions=True,max_sample_len=20,allowMultipleNotesOnTempo=False,allowNoteOnSeveralTempos=False)
