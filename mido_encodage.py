@@ -33,6 +33,11 @@ def parseMidi(midiFile,allowMultipleNotesOnTempo=False):
 				channels[chan].tracks[0].append(message)
 	return (channels,metas)
 
+def note2vect(note):
+	res = np.zeros(128,np.int)
+	res[note]=1
+	return res
+
 def note_egal_vect(mid,max_len=0,allowNoteOnSeveralTempos=False):
 	notevect = np.zeros(128,np.int)
 	listnote=[]
@@ -68,6 +73,43 @@ def note_egal_vect(mid,max_len=0,allowNoteOnSeveralTempos=False):
 		try:
 			if message.time == 0:
 				listnote.append(notevect)
+		except NameError:
+			raise Exception("Empty MIDI file")
+	listsample.append(listnote)
+	return listsample
+
+def note_egal_int(mid,max_len=0,allowNoteOnSeveralTempos=False):
+	note = 0
+	listnote=[]
+	listsample=[]
+	counter=0
+	for message in mid.tracks[0]:
+		if not isinstance(message,MetaMessage):
+			if allowNoteOnSeveralTempos:
+				if message.time > 0:
+					for i in range(message.time):
+						listnote.append(note)
+						counter+=1
+						if max_len > 0 and counter >= max_len:
+							listsample.append(listnote)
+							listnote=[]
+							counter=0
+				if message.type == 'note_on' and message.velocity != 0:
+					note=message.note
+			else:
+				if message.time > 0:
+					listnote.append(note)
+					counter+=1
+					if max_len > 0 and counter >= max_len:
+						listsample.append(listnote)
+						listnote=[]
+						counter=0
+				if message.type == 'note_on' and message.velocity != 0:
+					note=message.note
+	else:
+		try:
+			if message.time == 0:
+				listnote.append(note)
 		except NameError:
 			raise Exception("Empty MIDI file")
 	listsample.append(listnote)
