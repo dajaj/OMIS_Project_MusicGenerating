@@ -19,7 +19,8 @@ def addMidiToList(midiFile,midiList,verbose=1,removeExceptions=False,allowMultip
 	try:
 		channels,metas=me.parseMidi(midiFile,allowMultipleNotesOnTempo=allowMultipleNotesOnTempo)
 		for channel in channels:
-			midiList.append(channel)
+			if len(channel.tracks[0]) > 0:
+				midiList.append(channel)
 		if verbose:
 			print("Added "+midiFile+" ** "+str(len(channels))+" channels")
 	except:
