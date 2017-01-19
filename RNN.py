@@ -1,35 +1,59 @@
 from preprocess import preprocessMidi
-from seq2seq.models import SimpleSeq2Seq
+from models import getModel
 from sklearn.model_selection import train_test_split
-from keras.models import Sequential
-from keras.layers.embeddings import Embedding
 import numpy as np
+import sys,getopt
 
-saveName = "2017-01-18-model-001.h5"
+batch_size = 20
+defaultSaveName = "unnamed.h5"
+dataDirName = "MIDI/test"
 
-print(":: IMPORTING DATA SET")
-X,y = preprocessMidi("MIDI/test",verbose=1,removeExceptions=True,max_sample_len=20,allowMultipleNotesOnTempo=False,allowNoteOnSeveralTempos=False)
+def importDataSet(dirName):
+	print(":: IMPORTING DATA SET")
+	X,y = preprocessMidi(dirName,verbose=1,removeExceptions=True,max_sample_len=batch_size,allowMultipleNotesOnTempo=False,allowNoteOnSeveralTempos=False)
+	if len(X) == 0:
+		raise Exception("The sample is empty.")
+	X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.20)
+	print("Data set splitted into train and test data")
+	return X_train,X_test,y_train,y_test
 
-if len(X) == 0:
-  raise Exception("The sample is empty.")
+def compileModel(model):
+	print(":: COMPILING MODEL")
+	model.compile(loss='mse',optimizer='rmsprop')
 
-X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.20)
+def fitModel(model,X,y):
+	print(":: FITTING MODEL")
+	model.fit(X,y,nb_epoch=5)
 
-print("Data set splitted into train and test data")
+def evalModel(model,X,y):
+	print(":: EVALUATING MODEL ON TEST DATA")
+	loss = model.evaluate(X,y)
+	print("Loss : "+str(loss))
 
-model = Sequential()
-model.add(Embedding(input_dim=128,output_dim=128))
-model.add(SimpleSeq2Seq(input_dim=128,output_dim=128,output_length=len(X[0])))
+def useModel(model,modelSaveName,dataDir):
+	X_train,X_test,y_train,y_test = importDataSet(dataDir)
+	compileModel(model)
+	fitModel(model,X_train,y_train)
+	evalModel(model,X_test,y_test)
+	model.save(modelSaveName)
 
-print(":: COMPILING MODEL")
-model.compile(loss='mse',optimizer='rmsprop')
+def main(argv):
+	try:
+		opts, args = getopt.getopt(argv,"i:o:")
+	except getopt.GetoptError:
+		print 'test.py -i <dataDirName> -o <modelSaveName>'
+		sys.exit(2)
+	saveName = defaultSaveName
+	for opt, arg in opts:
+		if opt == '-i':
+			dataDirName = arg
+		elif opt == '-o':
+			saveName = arg
+	model = getModel(batch_size)
+	useModel(model,saveName,dataDirName)
+	if saveName == defaultSaveName:
+		print("Please be carefull, your saved model has a default name!")
 
-print(":: FITTING MODEL")
-model.fit(X_train,y_train,nb_epoch=5)
 
-print(":: EVALUATING MODEL ON TEST DATA")
-loss = model.evaluate(X_test,y_test)
-
-print("Loss : "+str(loss))
-
-model.save(saveName)
+if __name__ == "__main__":
+	main(sys.argv[1:])
