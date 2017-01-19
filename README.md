@@ -1,6 +1,8 @@
 # OMIS_Project_MusicGenerating
 
-The main code is **RNN.py** : run it with `python RNN.py`
+The main code is **RNN.py** : run it with `python RNN.py [-i <dataDirectory>] [-o <modelSaveName>]`
+
+The default data's directory is MIDI/test
 
 The whole code is in **python3**
 
