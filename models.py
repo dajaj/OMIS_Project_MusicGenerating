@@ -58,8 +58,7 @@ def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dro
 	for i in range(depth[1]):
 		decoder.add(Dropout(dropout, batch_input_shape=(shape[0], output_dim)))
 		decoder.add(LSTMDecoderCell(output_dim=output_dim, hidden_dim=hidden_dim, batch_input_shape=(shape[0], output_dim), **kwargs))
-	decoder.add(Dense(output_dim,activation='sigmoid'))
-#	decoder.add(ClassificationLayer())
+	decoder.add(Dense(output_dim,activation='softmax'))
 	
 	input = Input(batch_shape=shape)
 	input._keras_history[0].supports_masking = True
@@ -84,20 +83,3 @@ def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dro
 	model.encoder = wrapped_encoder
 	model.decoder = wrapped_decoder
 return model
-
-class ClassificationLayer(Layer):
-	def __init__(self, **kwargs):
-        super(ClassificationLayer, self).__init__(**kwargs)
-
-    def build(self, input_shape):
-        self.input_dim = input_shape[-1]
-        super(MyLayer, self).build()
-
-    def call(self, x, mask=None):
-		argmax = K.argmax(x,axis=0)
-		res = np.zeros(self.input_dim,np.int)
-		res[argmax] = 1
-        return res
-
-    def get_output_shape_for(self, input_shape):
-        return (input_shape)
