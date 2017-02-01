@@ -25,7 +25,8 @@ def parseMidi(midiFile,allowMultipleNotesOnTempo=False):
 					chan_max+=1
 				if message.type == 'note_on' and message.velocity != 0 and message.time == 0 and alreadyANoteOnTempo[chan]:
 					if not allowMultipleNotesOnTempo:
-						raise Exception("multiple notes on a tempo")
+						#raise Exception("multiple notes on a tempo")
+						continue
 				elif message.type == 'note_on' and message.velocity != 0:
 					alreadyANoteOnTempo[chan] = True
 				elif message.time > 0:
@@ -114,6 +115,19 @@ def note_egal_int(mid,max_len=0,allowNoteOnSeveralTempos=False):
 			raise Exception("Empty MIDI file")
 	listsample.append(listnote)
 	return listsample
+
+def vect2note(vect):
+	return np.argmax(vect)
+
+def vectList2midi(vectList):
+	mid = newMidiFile()
+	time = 0
+	for vect in vectList:
+		note=vect2note(vect)
+		mid.tracks[0].append(Message('note_on',note=note,time=time))
+		mid.tracks[0].append(Message('note_off',note=note,time=time+1))
+		time += 1
+	return mid
 
 def getMidiFile(midiFile):
 	return MidiFile(midiFile)
