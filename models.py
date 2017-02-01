@@ -64,14 +64,13 @@ def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dro
 	input._keras_history[0].supports_masking = True
 	encoded_seq = dense1(input)
 	encoded_seq = encoder(encoded_seq)
-	encoded_seq = encoded_seq[-2:]
 	
 	wrapped_encoder = Model(input,encoded_seq)
 	
-	decoder_input = Input(batch_shape=(2,hidden_dim))
+	decoder_input = Input(batch_shape=(hidden_dim))
 	decoder_input._keras_history[0].supports_masking = True
-	states = decoder_input
-	encoded_seq = decoder_input[-1]
+	states = decoder_input[-2:]
+	encoded_seq = decoder_input[0]
 	encoded_seq = dense2(encoded_seq)
 	decoded_seq = decoder({'input': encoded_seq, 'initial_readout': encoded_seq, 'states': states})
 	wrapped_decoder = Model(decoder_input,decoded_seq)
