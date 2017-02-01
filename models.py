@@ -82,4 +82,4 @@ def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dro
 	
 	model.encoder = wrapped_encoder
 	model.decoder = wrapped_decoder
-return model
+	return model
