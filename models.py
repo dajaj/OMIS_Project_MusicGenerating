@@ -3,7 +3,6 @@ from recurrentshop import LSTMCell, RecurrentContainer
 from seq2seq.cells import LSTMDecoderCell
 from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, TimeDistributed, Input
-from keras.engine.topology import Layer
 from keras import backend as K
 import numpy as np
 
@@ -54,6 +53,8 @@ def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dro
 	
 	dense2 = Dense(output_dim)
 	
+	middle = Dropout(0)
+	
 	decoder = RecurrentContainer(readout='add' if peek else 'readout_only', state_sync=True, output_length=output_length, unroll=unroll, stateful=stateful, decode=True, input_length=shape[1])
 	for i in range(depth[1]):
 		decoder.add(Dropout(dropout, batch_input_shape=(shape[0], output_dim)))
@@ -65,20 +66,19 @@ def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dro
 	encoded_seq = dense1(input)
 	encoded_seq = encoder(encoded_seq)
 	
-	wrapped_encoder = Model(input,encoded_seq)
+#	wrapped_encoder = Model(input,encoded_seq)
 	
-	decoder_input = Input(shape=(hidden_dim,))
-	decoder_input._keras_history[0].supports_masking = True
+	encoded_seq = middle(encoded_seq)
+	
+	decoder_input = encoded_seq
 	states = decoder_input[-2:]
 	encoded_seq = decoder_input[0]
 	encoded_seq = dense2(encoded_seq)
 	decoded_seq = decoder({'input': encoded_seq, 'initial_readout': encoded_seq, 'states': states})
-	wrapped_decoder = Model(decoder_input,decoded_seq)
-	
-	decoded_seq = wrapped_decoder(wrapped_encoder)
+#	wrapped_decoder = Model(middle.input,decoded_seq)
 	
 	model = Model(input, decoded_seq)
 	
-	model.encoder = wrapped_encoder
-	model.decoder = wrapped_decoder
+#	model.encoder = wrapped_encoder
+#	model.decoder = wrapped_decoder
 	return model
