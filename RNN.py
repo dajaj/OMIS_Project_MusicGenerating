@@ -1,16 +1,20 @@
 from preprocess import preprocessMidi
 from models import getModel
 from sklearn.model_selection import train_test_split
+from keras.models import load_model
 import numpy as np
 import sys,getopt
+import datetime as dt
 
 batch_size = 20
-defaultSaveName = "unnamed.h5"
 dataDirName = "MIDI/test"
 
 def importDataSet(dirName):
 	print(":: IMPORTING DATA SET")
-	X,y = preprocessMidi(dirName,verbose=1,removeExceptions=True,max_sample_len=batch_size,allowMultipleNotesOnTempo=False,allowNoteOnSeveralTempos=False)
+	X,y = preprocessMidi(dirName,verbose=0,removeExceptions=True,
+							max_sample_len=batch_size,
+							allowMultipleNotesOnTempo=False,
+							allowNoteOnSeveralTempos=False)
 	if len(X) == 0:
 		raise Exception("The sample is empty.")
 	X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.20)
@@ -19,16 +23,17 @@ def importDataSet(dirName):
 
 def compileModel(model):
 	print(":: COMPILING MODEL")
-	model.compile(loss='mse',optimizer='rmsprop')
+	model.compile(loss='mse',optimizer='rmsprop',metrics=['accuracy'])
 
 def fitModel(model,X,y):
 	print(":: FITTING MODEL")
-	model.fit(X,y,nb_epoch=5)
+	model.fit(X,y,nb_epoch=20)
 
 def evalModel(model,X,y):
 	print(":: EVALUATING MODEL ON TEST DATA")
-	loss = model.evaluate(X,y)
-	print("Loss : "+str(loss))
+	metrics = model.evaluate(X,y)
+	for i in range(len(metrics)):
+		print(model.metrics_names[i]+" : "+str(metrics[i]))
 
 def useModel(model,modelSaveName,dataDir):
 	X_train,X_test,y_train,y_test = importDataSet(dataDir)
@@ -39,21 +44,22 @@ def useModel(model,modelSaveName,dataDir):
 
 def main(argv):
 	try:
-		opts, args = getopt.getopt(argv,"i:o:")
+		opts, args = getopt.getopt(argv,"i:m:o:")
 	except getopt.GetoptError:
-		print('RNN.py -i <dataDirName> -o <modelSaveName>')
+		print('RNN.py -i <dataDirName> -m <modelToUse> -o <modelSaveName>')
 		sys.exit(2)
-	saveName = defaultSaveName
+	saveName = dt.datetime.now().strftime("Model_%Y%m%d%H%M.h5")
+	model = None
 	for opt, arg in opts:
 		if opt == '-i':
 			dataDirName = arg
 		elif opt == '-o':
 			saveName = arg
-	model = getModel(batch_size)
+		elif opt == '-m':
+			model = load_model(arg)
+	if model == None:
+		model = getModel(batch_size)
 	useModel(model,saveName,dataDirName)
-	if saveName == defaultSaveName:
-		print("Please be carefull, your saved model has a default name!")
-
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
