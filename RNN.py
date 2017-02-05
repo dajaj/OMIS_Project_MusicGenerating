@@ -40,7 +40,8 @@ def useModel(model,modelSaveName,dataDir):
 	compileModel(model)
 	fitModel(model,X_train,y_train)
 	evalModel(model,X_test,y_test)
-	model.save(modelSaveName)
+	#model.save(modelSaveName)
+	model.save_weights(modelSaveName)
 
 def main(argv):
 	try:
@@ -56,7 +57,8 @@ def main(argv):
 		elif opt == '-o':
 			saveName = arg
 		elif opt == '-m':
-			model = load_model(arg)
+			#model = load_model(arg)
+			model.load_weights(arg)
 	if model == None:
 		model = getModel(batch_size)
 	useModel(model,saveName,dataDirName)
