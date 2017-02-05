@@ -41,7 +41,7 @@ def main(argv):
 	try:
 		opts, args = getopt.getopt(argv,"i:o:")
 	except getopt.GetoptError:
-		print 'test.py -i <dataDirName> -o <modelSaveName>'
+		print('RNN.py -i <dataDirName> -o <modelSaveName>')
 		sys.exit(2)
 	saveName = defaultSaveName
 	for opt, arg in opts:
