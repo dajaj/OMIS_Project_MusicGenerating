@@ -53,8 +53,6 @@ def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dro
 	
 	dense2 = Dense(output_dim)
 	
-	middle = Dropout(0)
-	
 	decoder = RecurrentContainer(readout='add' if peek else 'readout_only', state_sync=True, output_length=output_length, unroll=unroll, stateful=stateful, decode=True, input_length=shape[1])
 	for i in range(depth[1]):
 		decoder.add(Dropout(dropout, batch_input_shape=(shape[0], output_dim)))
@@ -66,18 +64,17 @@ def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dro
 	encoded_seq = dense1(input)
 	encoded_seq = encoder(encoded_seq)
 	
-#	wrapped_encoder = Model(input,encoded_seq)
+	#wrapped_encoder = Model(input,encoded_seq)
 	
-	encoded_seq = middle(encoded_seq)
-	
+	#decoder_input = Input(batch_shape=encoder.output_shape)
 	decoder_input = encoded_seq
 	states = decoder_input[-2:]
 	encoded_seq = decoder_input[0]
 	encoded_seq = dense2(encoded_seq)
 	decoded_seq = decoder({'input': encoded_seq, 'initial_readout': encoded_seq, 'states': states})
-#	wrapped_decoder = Model(middle.input,decoded_seq)
+	#wrapped_decoder = Model(decoder_input,decoded_seq)
 	
-	model = Model(input, decoded_seq)
+	model = Model(input, decoded_seq)#(encoded_seq))
 	
 #	model.encoder = wrapped_encoder
 #	model.decoder = wrapped_decoder
