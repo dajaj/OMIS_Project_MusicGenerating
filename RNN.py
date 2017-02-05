@@ -50,7 +50,7 @@ def main(argv):
 		print('RNN.py -i <dataDirName> -m <modelToUse> -o <modelSaveName>')
 		sys.exit(2)
 	saveName = dt.datetime.now().strftime("Model_%Y%m%d%H%M.h5")
-	model = None
+	model = getModel(batch_size)
 	for opt, arg in opts:
 		if opt == '-i':
 			dataDirName = arg
