@@ -17,9 +17,9 @@ def importDataSet(dirName):
 							allowNoteOnSeveralTempos=False)
 	if len(X) == 0:
 		raise Exception("The sample is empty.")
-	X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.20)
-	print("Data set splitted into train and test data")
-	return X_train,X_test,y_train,y_test
+	#X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.20)
+	#print("Data set splitted into train and test data")
+	return X,y #X_train,X_test,y_train,y_test
 
 def compileModel(model):
 	print(":: COMPILING MODEL")
@@ -27,7 +27,7 @@ def compileModel(model):
 
 def fitModel(model,X,y):
 	print(":: FITTING MODEL")
-	model.fit(X,y,nb_epoch=20)
+	model.fit(X,y,nb_epoch=5)
 
 def evalModel(model,X,y):
 	print(":: EVALUATING MODEL ON TEST DATA")
@@ -36,11 +36,14 @@ def evalModel(model,X,y):
 		print(model.metrics_names[i]+" : "+str(metrics[i]))
 
 def useModel(model,modelSaveName,dataDir):
-	X_train,X_test,y_train,y_test = importDataSet(dataDir)
+	#X_train,X_test,y_train,y_test
+	X,y = importDataSet(dataDir)
 	compileModel(model)
-	fitModel(model,X_train,y_train)
-	evalModel(model,X_test,y_test)
-	#model.save(modelSaveName)
+	for i in range(20):
+		print(":: ROUND "+str(i))
+		X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.20)
+		fitModel(model,X_train,y_train)
+		evalModel(model,X_test,y_test)
 	model.save_weights(modelSaveName)
 
 def main(argv):
@@ -49,7 +52,7 @@ def main(argv):
 	except getopt.GetoptError:
 		print('RNN.py -i <dataDirName> -m <modelToUse> -o <modelSaveName>')
 		sys.exit(2)
-	saveName = dt.datetime.now().strftime("Model_%Y%m%d%H%M.h5")
+	saveName = dt.datetime.now().strftime("Weights_%Y%m%d%H%M.h5")
 	model = getModel(batch_size)
 	for opt, arg in opts:
 		if opt == '-i':
@@ -57,7 +60,6 @@ def main(argv):
 		elif opt == '-o':
 			saveName = arg
 		elif opt == '-m':
-			#model = load_model(arg)
 			model.load_weights(arg)
 	if model == None:
 		model = getModel(batch_size)
