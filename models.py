@@ -9,11 +9,10 @@ import numpy as np
 def getModel(batch_size):
 	model = Sequential()
 	model.add(Embedding(input_dim=128,output_dim=128))
-	model.add(Seq2Seq(input_dim=128,output_dim=128,output_length=batch_size,hidden_dim=128))
+	model.add(Seq2Seq(input_dim=128,output_dim=128,output_length=batch_size,hidden_dim=128,dropout=0.1))
 	return model
 
 # Taken from seq2seq and adapted
-# Waiting to know if we add the ClassifierLayer
 def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dropout=0., **kwargs):
 	if type(depth) == int:
 		depth = [depth, depth]
