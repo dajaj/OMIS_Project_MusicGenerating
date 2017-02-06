@@ -9,7 +9,7 @@ import numpy as np
 def getModel(batch_size):
 	model = Sequential()
 	model.add(Embedding(input_dim=128,output_dim=128))
-	model.add(Seq2Seq(input_dim=128,output_dim=128,output_length=batch_size,hidden_dim=128,dropout=0.1))
+	model.add(Seq2Seq(input_dim=128,output_dim=128,output_length=batch_size,hidden_dim=128))
 	return model
 
 # Taken from seq2seq and adapted
@@ -45,7 +45,7 @@ def Seq2Seq(output_dim, output_length, hidden_dim=None, depth=1, peek=False, dro
 	encoder = RecurrentContainer(readout=True, state_sync=True, input_length=shape[1], unroll=unroll, stateful=stateful, return_states=True)
 	for i in range(depth[0]):
 		encoder.add(LSTMCell(hidden_dim, batch_input_shape=(shape[0], hidden_dim), **kwargs))
-		encoder.add(Dropout(dropout))
+		encoder.add(Dropout(dropout,batch_input_shape=(shape[0], hidden_dim)))
 	
 	dense1 = TimeDistributed(Dense(hidden_dim))
 	dense1.supports_masking = True
