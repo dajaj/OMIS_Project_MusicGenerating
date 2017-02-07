@@ -23,7 +23,7 @@ def generateMIDI(MIDIinput,weights,saveName):
 			ch_list.extend(batch)
 		ch_mid = vectList2midi(ch_list)
 		channels.append(ch_mid)
-		saveMidi(ch_mid,"ch"+str(nb)+".mid")
+		#saveMidi(ch_mid,saveName[:-4]+"_ch"+str(nb)+".mid")
 		nb+=1
 	midi = midiChannels2midi(channels)
 	saveMidi(midi,saveName)
