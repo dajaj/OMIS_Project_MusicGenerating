@@ -6,10 +6,10 @@ from keras.layers import Dense, Dropout, TimeDistributed, Input
 from keras import backend as K
 import numpy as np
 
-def getModel(batch_size):
+def getModel(output_length):
 	model = Sequential()
 	model.add(Embedding(input_dim=128,output_dim=128))
-	model.add(Seq2Seq(input_dim=128,output_dim=128,output_length=batch_size,hidden_dim=128))
+	model.add(Seq2Seq(input_dim=128,output_dim=128,output_length=output_length,hidden_dim=128))
 	return model
 
 # Taken from seq2seq and adapted

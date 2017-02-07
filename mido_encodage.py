@@ -117,16 +117,22 @@ def note_egal_int(mid,max_len=0,allowNoteOnSeveralTempos=False):
 	return listsample
 
 def vect2note(vect):
-	return np.argmax(vect)
+	return np.asscalar(np.argmax(vect))
 
 def vectList2midi(vectList):
 	mid = newMidiFile()
-	time = 0
 	for vect in vectList:
 		note=vect2note(vect)
-		mid.tracks[0].append(Message('note_on',note=note,time=time))
-		mid.tracks[0].append(Message('note_off',note=note,time=time+1))
-		time += 1
+		mid.tracks[0].append(Message('note_on',note=note,time=0))
+		mid.tracks[0].append(Message('note_off',note=note,time=200))
+	return mid
+
+def midiChannels2midi(channels):
+	mid = newMidiFile()
+	mid.tracks.pop()
+	for channel in channels:
+		track = channel.tracks[0]
+		mid.tracks.append(track)
 	return mid
 
 def getMidiFile(midiFile):
